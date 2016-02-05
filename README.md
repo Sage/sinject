@@ -45,7 +45,7 @@ The registration mode can be set by specifying **true** or **false** to the *'si
 
 **Assigning dependencies**
 
-To assign a dependency to an object you need to add the dependency attribute to the class and specify the symbol key used to register the dependency with the SinjectContainer:
+To assign a dependency to an object you need to add the dependency attribute to the class and specify the symbol key that was used to register the dependency with the SinjectContainer:
 
     class MySqlCountryRepository
 	    
