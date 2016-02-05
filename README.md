@@ -1,9 +1,7 @@
-<<<<<<< HEAD
+
 # Sinject
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/sinject`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Welcome to Sinject! a simple dependency injection framework for ruby.
 
 ## Installation
 
@@ -23,7 +21,40 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+**Rails Setup**
+If you're using rails then after you've installed the gem you need to create a dependencies.rb file within the *'/config/initializers'* directory of the rail application.
+
+**Registering dependencies**
+Dependency objects need to be registered with the container before use, to do so you need to configure the SinjectContainer from the dependencies.rb file:
+
+    #initialize the container
+    container = SinjectContainer.new
+    
+    #register your dependencies
+    container.register(:cache_store, RedisCacheStore, true)
+    container.register(:country_repository, MySqlCountryRepository, false)
+
+**Assigning dependencies**
+To assign a dependency to an object you need to add the dependency attribute to the class and specify the symbol key used to register the dependency with the SinjectContainer:
+
+    class MySqlCountryRepository
+	    
+	    dependency :cache_store
+		
+		.....
+	end
+
+    class CountryController < ActionController::Base
+	
+		dependency :country_repository    
+
+		.....
+    end
+
+Sinject will then inject the registered dependency to that object and it will be accessible via the dependency key:
+
+    country_controller.country_repository.cache_store
+ 
 
 ## Development
 
