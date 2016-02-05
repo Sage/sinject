@@ -23,7 +23,7 @@ Or install it yourself as:
 
 **Rails Setup**
 
-If you're using rails then after you've installed the gem you need to create a *'dependencies.rb'* file within the *'/config/initializers'* directory of the rail application.
+If you're using rails then after you've installed the gem you need to create a *'dependencies.rb'* file within the *'/config/initializers'* directory of the rails application.
 
 **Registering dependencies**
 
