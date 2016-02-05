@@ -80,8 +80,3 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/vaugha
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
-=======
-# sinject
-A simple dependency injection framework for ruby.
->>>>>>> 6a85e4cbf29c3874701332710a37936cff9e7105
