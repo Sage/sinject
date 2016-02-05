@@ -22,9 +22,11 @@ Or install it yourself as:
 ## Usage
 
 **Rails Setup**
-If you're using rails then after you've installed the gem you need to create a dependencies.rb file within the *'/config/initializers'* directory of the rail application.
+
+If you're using rails then after you've installed the gem you need to create a *'dependencies.rb'* file within the *'/config/initializers'* directory of the rail application.
 
 **Registering dependencies**
+
 Dependency objects need to be registered with the container before use, to do so you need to configure the SinjectContainer from the dependencies.rb file:
 
     #initialize the container
@@ -35,6 +37,7 @@ Dependency objects need to be registered with the container before use, to do so
     container.register(:country_repository, MySqlCountryRepository, false)
 
 **Assigning dependencies**
+
 To assign a dependency to an object you need to add the dependency attribute to the class and specify the symbol key used to register the dependency with the SinjectContainer:
 
     class MySqlCountryRepository
