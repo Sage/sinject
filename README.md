@@ -38,8 +38,8 @@ Dependency objects need to be registered with the container before use, to do so
    
 Dependencies can be registered with the container in 2 modes:
 
-- Single instance:  	This mode ensures that only 1 instance is created for the registered dependency and that all requests to the container for that dependency return the same instance.
-- Multi instance:	This mode ensures that a new instance of the registered dependency is returned for each request received by the container. 
+- **Single instance:**  	This mode ensures that only 1 instance is created for the registered dependency and that all requests to the container for that dependency return the same instance.
+- **Multi instance:**	This mode ensures that a new instance of the registered dependency is returned for each request received by the container. 
 
 The registration mode can be set by specifying **true** or **false** to the *'single_instance'* argument of the containers register method.
 
