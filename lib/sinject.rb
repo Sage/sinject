@@ -31,21 +31,29 @@ class SinjectContainer
   # Multi instance objects are a new instance that is created for each request.
   #
   # Example:
-  #   >> SinjectContainer.instance.register :object_key, ClassName, true
+  #   >> SinjectContainer.instance.register :object_key, ClassName, true, ContractName
   #
   # Arguments:
   #   key:  (Symbol)
   #   class_name: (ClassName)
   #   single_instance:  (Boolean)
-  def register(key, class_name, single_instance = false)
+  def register(key, dependency_class_name, single_instance = false, contract_class_name = nil, &initialize_block)
+
+    #check if a contract has been specified
+    if contract_class_name != nil
+      #check if any contract methods are mising
+      missing_methods = validate_contract(dependency_class_name, contract_class_name)
+      if !missing_methods.empty?
+        raise DependencyContractException.new(missing_methods)
+      end
+    end
+
     item = ContainerItem.new
     item.key = key
     item.single_instance = single_instance
-    if single_instance == true
-      item.instance = class_name.new
-    else
-      item.class_name = class_name
-    end
+    item.class_name = dependency_class_name
+    item.initialize_block = initialize_block
+
     @store.push(item)
   end
 
@@ -58,18 +66,56 @@ class SinjectContainer
   # Arguments:
   #   key:  (Symbol)
   def get(key)
+    #get the dependency from the container store for the specified key
     items = @store.select { |i| i.key == key}
     if !items.empty?
       item = items.first
+
+      #check if the item has been registered as a single instance item.
       if item.single_instance == true
+        #check if the instance needs to be created
+        if item.instance == nil
+          item.instance = create_instance(item)
+        end
         return item.instance
       else
-        return item.class_name.new
+        return create_instance(item)
       end
     else
+      #no dependency has been registered for the specified key, attempt to convert the key into a class name and initialize it.
       class_name = "#{key}".split('_').collect(&:capitalize).join
       Object.const_get(class_name).new
     end
+  end
+
+  private
+
+  def validate_contract(dependency_class, contract_class)
+    #get the methods defined for the contract
+    contract_methods = (contract_class.instance_methods - Object.instance_methods)
+    #get the methods defined for the dependency
+    dependency_methods = (dependency_class.instance_methods - Object.instance_methods)
+    #calculate any methods specified in the contract that are not specified in the dependency
+    contract_methods - dependency_methods
+  end
+
+  def create_instance(item)
+    instance = nil
+
+    #check if a custom initializer block has been specified
+    if item.initialize_block != nil
+      #call the block to create the dependency instance
+      instance = item.initialize_block.call
+
+      #verify the block created the expected dependency type
+      if !instance.is_a?(item.class_name)
+        raise DependencyInitializeException.new(item.class_name)
+      end
+    else
+      instance = item.class_name.new
+    end
+
+    instance
   end
 end
 
@@ -78,6 +124,7 @@ class ContainerItem
   attr_accessor :instance
   attr_accessor :single_instance
   attr_accessor :class_name
+  attr_accessor :initialize_block
 end
 
 class Class
@@ -104,4 +151,27 @@ class Class
 
     end
   end
+end
+
+class DependencyContractException < StandardError
+  def initialize(methods)
+    @methods = methods
+  end
+
+  def to_s
+    method_names = @methods.join(', ')
+    "The following methods have not been implemented: '#{method_names}'"
+  end
+end
+
+class DependencyInitializeException < StandardError
+
+  def initialize(expected_type)
+    @expected_type = expected_type
+  end
+
+  def to_s
+    "The custom dependency initializer does not return an object of the expected type: '#{@expected_type}'"
+  end
+
 end

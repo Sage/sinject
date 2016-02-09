@@ -28,4 +28,17 @@ class ObjectWithDependency
   dependency :goodbye_world
 end
 
+class CustomLogger
+  def write
+
+  end
+end
+class LoggerContract
+  def write
+
+  end
+end
+
+
+
 

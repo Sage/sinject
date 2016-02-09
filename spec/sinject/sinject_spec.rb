@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 require_relative 'test_objects/test_classes'
+require 'pry'
 
 describe SinjectContainer do
 
@@ -60,6 +61,48 @@ describe SinjectContainer do
     expect(obj.goodbye_world).to be_a(GoodbyeWorld)
 
     expect(obj.goodbye_world).to eq(obj.goodbye_world)
+  end
+
+  it 'should not throw an exception for a dependency registration with a valid contract' do
+
+    container = SinjectContainer.new
+
+    expect { container.register(:logger, CustomLogger, true, LoggerContract) }.not_to raise_error
+
+  end
+
+  it 'should throw a DependencyContractException for a dependency registration with an invalid contract' do
+
+    container = SinjectContainer.new
+
+    expect { container.register(:logger, SingleInstance, true, LoggerContract) }.to raise_error(DependencyContractException)
+
+  end
+
+  it 'should create a dependency from a custom initialize block' do
+
+    container = SinjectContainer.new
+    container.register(:hello_world, HelloWorld) do
+      instance = HelloWorld.new
+      instance.value = 'Custom init'
+      instance
+    end
+
+    obj = container.get(:hello_world)
+
+    expect(obj.value).to eq('Custom init')
+
+  end
+
+  it 'should throw a DependencyInitializeException for a dependency initializer block that fails to create a dependency of the expected type' do
+
+    container = SinjectContainer.new
+    container.register(:hello_world, HelloWorld) do
+        GoodbyeWorld.new
+    end
+
+    expect { container.get(:hello_world) }.to raise_error(DependencyInitializeException)
+
   end
 
 end

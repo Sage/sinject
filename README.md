@@ -43,6 +43,37 @@ Dependencies can be registered with the container in 2 modes:
 
 The registration mode can be set by specifying **true** or **false** to the *'single_instance'* argument of the containers register method.
 
+Dependencies that require custom initialization can be registered with an initialization block to creates the dependency, this allows you more control over how the dependency is create:
+
+    #register your dependencies
+    container.register(:cache_store, RedisCacheStore, true) do
+        instance = RedisCacheStore.new
+        instance.host = 'http://localhost'
+        instance.port = '6369'
+        instance
+    end
+
+Dependencies with a custom initialization block must return an object of the registered dependency class name, if an unexpected instance is returned then Sinject will raise a `DependencyInitializeException`.
+
+**Dependency Contracts**
+
+Dependency contracts can be defined and used to validate registered dependencies are valid for the task they are being registered for.
+
+To create a dependency contract you simply create a new class with empty methods for each of the methods that the dependency needs to respond to in order to fulfill it's role:
+
+    #initialize the container
+    class LoggerContract
+        def write
+        end
+    end
+
+Then when registering a dependency for the role the contract is written for, you can assign the contract:
+
+    #register the dependency
+    container.register(:logger, FileLogger, false, LoggerContract)
+    
+Sinject will then validate that the registered dependency meets the requirements specified within the contract. If a dependency does not meet the contract requirements then a `DependencyContractException` is raised.
+
 **Assigning dependencies**
 
 To assign a dependency to an object you need to add the dependency attribute to the class and specify the symbol key that was used to register the dependency with the SinjectContainer:
