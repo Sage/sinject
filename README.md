@@ -43,9 +43,8 @@ Dependencies can be registered with the container in 2 modes:
 
 The registration mode can be set by specifying **true** or **false** to the *'single_instance'* argument of the containers register method.
 
-Dependencies that require custom initialization can be registered with an initialization block to creates the dependency, this allows you more control over how the dependency is create:
+Dependencies that require custom initialization can be registered with an initialization block to handle creation of the dependency, this allows you more control over how the dependency is created:
 
-    #register your dependencies
     container.register(:cache_store, RedisCacheStore, true) do
         instance = RedisCacheStore.new
         instance.host = 'http://localhost'
@@ -53,15 +52,14 @@ Dependencies that require custom initialization can be registered with an initia
         instance
     end
 
-Dependencies with a custom initialization block must return an object of the registered dependency class name, if an unexpected instance is returned then Sinject will raise a `DependencyInitializeException`.
+Dependencies with a custom initialization block must return an object of the registered dependency class type, if an unexpected instance is returned then Sinject will raise a `DependencyInitializeException`.
 
 **Dependency Contracts**
 
-Dependency contracts can be defined and used to validate registered dependencies are valid for the task they are being registered for.
+Dependency contracts can be defined to validate registered dependencies are valid for the task they are being registered for.
 
-To create a dependency contract you simply create a new class with empty methods for each of the methods that the dependency needs to respond to in order to fulfill it's role:
+To create a dependency contract you need to create a new class with empty methods for each of the methods that the dependency needs to respond to in order to fulfill it's role:
 
-    #initialize the container
     class LoggerContract
         def write
         end
