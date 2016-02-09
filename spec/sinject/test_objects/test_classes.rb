@@ -39,6 +39,18 @@ class LoggerContract
   end
 end
 
+class CacheControlContract
+  def set(key, value)
+
+  end
+end
+
+class RedisCacheControl
+  def set(key, value, expires)
+
+  end
+end
+
 
 
 

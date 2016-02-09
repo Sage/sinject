@@ -63,7 +63,7 @@ To create a dependency contract you simply create a new class with empty methods
 
     #initialize the container
     class LoggerContract
-        def write
+        def write(message)
         end
     end
 
@@ -72,7 +72,11 @@ Then when registering a dependency for the role the contract is written for, you
     #register the dependency
     container.register(:logger, FileLogger, false, LoggerContract)
     
-Sinject will then validate that the registered dependency meets the requirements specified within the contract. If a dependency does not meet the contract requirements then a `DependencyContractException` is raised.
+Sinject will then validate that the registered dependency meets the requirements specified within the contract. If a dependency does not meet the contract requirements then 1 of the following exceptions will be raised:
+
+- `DependencyContractMissingMethodsException` is raised when 1 or more methods from the contract could not be found on the dependency.
+- `DependencyContractInvalidParametersException` is raised when the parameters of a contract method do not match the parameters found on a dependency method.
+
 
 **Assigning dependencies**
 

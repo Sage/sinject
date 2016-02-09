@@ -71,11 +71,19 @@ describe SinjectContainer do
 
   end
 
-  it 'should throw a DependencyContractException for a dependency registration with an invalid contract' do
+  it 'should throw a DependencyContractMissingMethodsException for a dependency registration with missing methods from the contract' do
 
     container = SinjectContainer.new
 
-    expect { container.register(:logger, SingleInstance, true, LoggerContract) }.to raise_error(DependencyContractException)
+    expect { container.register(:logger, SingleInstance, true, LoggerContract) }.to raise_error(DependencyContractMissingMethodsException)
+
+  end
+
+  it 'should throw a DependencyContractInvalidParametersException for a dependency registration with invalid method parameters compared to the contract' do
+
+    container = SinjectContainer.new
+
+    expect { container.register(:cache_control, RedisCacheControl, true, CacheControlContract) }.to raise_error(DependencyContractInvalidParametersException)
 
   end
 

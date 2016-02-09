@@ -41,11 +41,8 @@ class SinjectContainer
 
     #check if a contract has been specified
     if contract_class_name != nil
-      #check if any contract methods are mising
-      missing_methods = validate_contract(dependency_class_name, contract_class_name)
-      if !missing_methods.empty?
-        raise DependencyContractException.new(missing_methods)
-      end
+      #validate the dependency class against the contract
+      validate_contract(dependency_class_name, contract_class_name)
     end
 
     item = ContainerItem.new
@@ -91,12 +88,33 @@ class SinjectContainer
   private
 
   def validate_contract(dependency_class, contract_class)
+
     #get the methods defined for the contract
     contract_methods = (contract_class.instance_methods - Object.instance_methods)
     #get the methods defined for the dependency
     dependency_methods = (dependency_class.instance_methods - Object.instance_methods)
     #calculate any methods specified in the contract that are not specified in the dependency
-    contract_methods - dependency_methods
+    missing_methods = contract_methods - dependency_methods
+
+    if !missing_methods.empty?
+      raise DependencyContractMissingMethodsException.new(missing_methods)
+    end
+
+    #loop through each contract method
+    contract_methods.each do |method|
+
+      #get the contract method parameters
+      cmp = contract_class.instance_method(method).parameters
+      #get teh dependency method parameters
+      dmp = dependency_class.instance_method(method).parameters
+
+      #check if the parameters match for both methods
+      if cmp != dmp
+        raise DependencyContractInvalidParametersException.new(method, cmp)
+      end
+
+    end
+
   end
 
   def create_instance(item)
@@ -153,7 +171,7 @@ class Class
   end
 end
 
-class DependencyContractException < StandardError
+class DependencyContractMissingMethodsException < StandardError
   def initialize(methods)
     @methods = methods
   end
@@ -161,6 +179,18 @@ class DependencyContractException < StandardError
   def to_s
     method_names = @methods.join(', ')
     "The following methods have not been implemented: '#{method_names}'"
+  end
+end
+
+class DependencyContractInvalidParametersException < StandardError
+  def initialize(method, parameters)
+    @method = method
+    @parameters = parameters
+  end
+
+  def to_s
+    parameter_names = @parameters.join(', ')
+    "The method signature of method: '#{@method}' does not match the contract parameters: '#{parameter_names}'"
   end
 end
 
