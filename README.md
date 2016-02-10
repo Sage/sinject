@@ -56,7 +56,7 @@ Dependencies with a custom initialization block must return an object of the reg
 
 **Dependency Contracts**
 
-Dependency contracts can be defined to validate registered dependencies are valid for the task they are being registered for.
+Dependency contracts can be defined to validate registered dependencies are valid for the task they are being registered for. (If you are familiar with other type based languages then you can think of this as an Interface)
 
 To create a dependency contract you need to create a new class with empty methods for each of the methods that the dependency needs to respond to in order to fulfill it's role:
 
