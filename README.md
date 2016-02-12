@@ -95,10 +95,10 @@ For example:
         end
     end
 
-To load all dependency groups that return **True** from the `is_valid?` method the following method needs to be called from the container:
+To load valid dependency groups the following method needs to be called from the container:
 
     container.load_groups
-
+    
 **Assigning dependencies**
 
 To assign a dependency to an object you need to add the dependency attribute to the class and specify the symbol key that was used to register the dependency with the SinjectContainer:
