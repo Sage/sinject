@@ -95,7 +95,9 @@ For example:
         end
     end
 
-Only dependency groups that return **True** from the is_valid? method will be loaded.
+To load all dependency groups that return **True** from the is_valid? method the following method needs to be called from the container:
+
+    container.load_groups
 
 **Assigning dependencies**
 
