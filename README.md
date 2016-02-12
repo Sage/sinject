@@ -54,6 +54,29 @@ Dependencies that require custom initialization can be registered with an initia
 
 Dependencies with a custom initialization block must return an object of the registered dependency class type, if an unexpected instance is returned then Sinject will raise a `DependencyInitializeException`.
 
+**Assigning dependencies**
+
+To assign a dependency to an object you need to add the dependency attribute to the class and specify the symbol key that was used to register the dependency with the SinjectContainer:
+
+    class MySqlCountryRepository
+	    
+	    dependency :cache_store
+		
+		.....
+	end
+
+    class CountryController < ActionController::Base
+	
+		dependency :country_repository    
+
+		.....
+    end
+
+Sinject will then inject the registered dependency to that object and it will be accessible via the dependency key:
+
+    country_controller.country_repository.cache_store
+    
+
 **Dependency Contracts**
 
 Dependency contracts can be defined to validate registered dependencies are valid for the task they are being registered for. *(If you are familiar with other type based languages then you can think of this as a kind of Interface)*
@@ -99,28 +122,6 @@ To load valid dependency groups the following method needs to be called from the
 
     container.load_groups
     
-**Assigning dependencies**
-
-To assign a dependency to an object you need to add the dependency attribute to the class and specify the symbol key that was used to register the dependency with the SinjectContainer:
-
-    class MySqlCountryRepository
-	    
-	    dependency :cache_store
-		
-		.....
-	end
-
-    class CountryController < ActionController::Base
-	
-		dependency :country_repository    
-
-		.....
-    end
-
-Sinject will then inject the registered dependency to that object and it will be accessible via the dependency key:
-
-    country_controller.country_repository.cache_store
- 
 
 ## Development
 
