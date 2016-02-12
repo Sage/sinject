@@ -27,7 +27,7 @@ If you're using rails then after you've installed the gem you need to create a *
 
 **Registering dependencies**
 
-Dependency objects need to be registered with the container before use, to do so you need to configure the SinjectContainer: ** If you're using rails this will need to be done from the *'dependencies.rb'* file:**
+Dependency objects need to be registered with the container before use, to do so you need to configure the SinjectContainer: [If you're using rails this will need to be done within the *'dependencies.rb'* file]
 
     #initialize the container
     container = SinjectContainer.new
