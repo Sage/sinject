@@ -39,6 +39,11 @@ class SinjectContainer
   #   single_instance:  (Boolean)
   def register(key, dependency_class_name, single_instance = false, contract_class_name = nil, &initialize_block)
 
+    #check if a dependency has already been registered for this key.
+    if is_registered?(key)
+      raise DependencyRegistrationException.new(key)
+    end
+
     #check if a contract has been specified
     if contract_class_name != nil
       #validate the dependency class against the contract
@@ -211,6 +216,18 @@ class DependencyInitializeException < StandardError
 
   def to_s
     "The custom dependency initializer does not return an object of the expected type: '#{@expected_type}'"
+  end
+
+end
+
+class DependencyRegistrationException < StandardError
+
+  def initialize(key)
+    @key = key
+  end
+
+  def to_s
+    "A Dependency has already been registered for the key: '#{key}'"
   end
 
 end
