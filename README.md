@@ -27,7 +27,7 @@ If you're using rails then after you've installed the gem you need to create a *
 
 **Registering dependencies**
 
-Dependency objects need to be registered with the container before use, to do so you need to configure the SinjectContainer from the *'dependencies.rb'* file:
+Dependency objects need to be registered with the container before use, to do so you need to configure the SinjectContainer: ** If you're using rails this will need to be done from the *'dependencies.rb'* file:**
 
     #initialize the container
     container = SinjectContainer.new
@@ -43,7 +43,7 @@ Dependencies can be registered with the container in 2 modes:
 
 The registration mode can be set by specifying **true** or **false** to the *'single_instance'* argument of the containers register method.
 
-Dependencies that require custom initialization can be registered with an initialization block to handle creation of the dependency, this allows you more control over how the dependency is created:
+Dependencies that require custom initialization can be registered with an initialization block to handle the creation of the dependency, this allows you more control over how the dependency is created if required:
 
     container.register(:cache_store, RedisCacheStore, true) do
         instance = RedisCacheStore.new
@@ -77,7 +77,7 @@ Sinject will then validate that the registered dependency meets the requirements
 
 **Dependency Groups**
 
-Dependency registrations groups can be created to allow groups of dependencies to be set without the need for manual registration *(e.g. to include with a gem for auto registration)*, or to allow different dependency groups to bd loaded in different circumstances *(e.g. per environment)*.
+Dependency registration groups can be created to allow groups of dependencies to be set without the need for manual registration *(e.g. to include with a gem for auto registration)*, or to allow different dependency groups to bd loaded in different circumstances *(e.g. per environment)*.
 
 To create a dependency group create a class that inherits from the DependencyGroup base class and implement the *'register'* & *'is_valid'* methods.
 
