@@ -85,6 +85,15 @@ class SinjectContainer
     end
   end
 
+  def load_groups
+    DependencyGroup.descendants.each do |g|
+      group = g.new
+      if group.is_valid?
+        group.register(SinjectContainer.instance)
+      end
+    end
+  end
+
   private
 
   def validate_contract(dependency_class, contract_class)
@@ -202,6 +211,22 @@ class DependencyInitializeException < StandardError
 
   def to_s
     "The custom dependency initializer does not return an object of the expected type: '#{@expected_type}'"
+  end
+
+end
+
+class DependencyGroup
+
+  def register(container)
+
+  end
+
+  def is_valid?
+    return true
+  end
+
+  def self.descendants
+    ObjectSpace.each_object(Class).select { |klass| klass < self }
   end
 
 end

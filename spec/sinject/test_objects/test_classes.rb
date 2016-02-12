@@ -51,6 +51,27 @@ class RedisCacheControl
   end
 end
 
+class TestDependencyGroup < DependencyGroup
+  def register(container)
+    container.register(:hello_world, HelloWorld, true)
+    container.register(:goodbye_world, GoodbyeWorld, true)
+  end
+
+  def is_valid?
+    return true
+  end
+end
+
+class TestDependencyGroup2 < DependencyGroup
+  def register(container)
+    container.register(:logger, CustomLogger, true)
+  end
+
+  def is_valid?
+    return false
+  end
+end
+
 
 
 

@@ -113,4 +113,23 @@ describe SinjectContainer do
 
   end
 
+  it 'should load dependencies from valid dependencygroups' do
+
+    container = SinjectContainer.new
+    container.load_groups
+
+    expect(container.is_registered?(:hello_world)).to eq(true)
+    expect(container.is_registered?(:goodbye_world)).to eq(true)
+
+  end
+
+  it 'should not load dependencies from invalid dependencygroups' do
+
+    container = SinjectContainer.new
+    container.load_groups
+
+    expect(container.is_registered?(:logger)).to eq(false)
+
+  end
+
 end

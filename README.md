@@ -75,6 +75,27 @@ Sinject will then validate that the registered dependency meets the requirements
 - `DependencyContractMissingMethodsException` is raised when 1 or more methods from the contract could not be found on the dependency.
 - `DependencyContractInvalidParametersException` is raised when the parameters of a contract method do not match the parameters found on a dependency method.
 
+**Dependency Groups**
+
+Dependency registrations groups can be created to allow groups of dependencies to be set without the need for manual registration *(e.g. to include with a gem for auto registration)*, or to allow different dependency groups to bd loaded in different circumstances *(e.g. per environment)*.
+
+To create a dependency group create a class that inherits from the DependencyGroup base class and implement the *'register'* & *'is_valid'* methods.
+
+For example:
+
+    #create a development only dependency group
+    class DevelopmentDependencies < DependencyGroup
+        def register(container)
+            container.register(:cache_store, LocalCacheStore, true)
+            container.register(:logger, TerminalLogger, true)
+        end
+        
+        def is_valid?
+            Rails.env.development?
+        end
+    end
+
+Only dependency groups that return **True** from the is_valid? method will be loaded.
 
 **Assigning dependencies**
 
