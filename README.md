@@ -79,7 +79,7 @@ Sinject will then validate that the registered dependency meets the requirements
 
 Dependency registration groups can be created to allow groups of dependencies to be set without the need for manual registration *(e.g. to include with a gem for auto registration)*, or to allow different dependency groups to be loaded in different circumstances *(e.g. per environment)*.
 
-To create a dependency group, create a class that inherits from the `DependencyGroup` base class and implement the `register` & `is_valid` methods.
+To create a dependency group, create a class that inherits from the `DependencyGroup` base class and implement the `register` & `is_valid?` methods.
 
 For example:
 
@@ -95,7 +95,7 @@ For example:
         end
     end
 
-To load all dependency groups that return **True** from the is_valid? method the following method needs to be called from the container:
+To load all dependency groups that return **True** from the `is_valid?` method the following method needs to be called from the container:
 
     container.load_groups
 
