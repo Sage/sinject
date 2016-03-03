@@ -2,7 +2,6 @@
 
 require 'spec_helper'
 require_relative 'test_objects/test_classes'
-require 'pry'
 
 describe SinjectContainer do
 
