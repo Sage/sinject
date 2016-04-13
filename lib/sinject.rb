@@ -1,16 +1,12 @@
 require "sinject/version"
-
+require "singleton"
 
 #This is the IOC Container for registering all dependencies an building objects.
 class SinjectContainer
-
-  class << self
-    attr_accessor :instance
-  end
+  include Singleton
 
   def initialize
     @store = []
-    SinjectContainer.instance = self
   end
 
   # Check if an object has been registered with the container.
