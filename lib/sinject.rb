@@ -86,6 +86,7 @@ class SinjectContainer
     else
       #no dependency has been registered for the specified key, attempt to convert the key into a class name and initialize it.
       class_name = "#{key}".split('_').collect(&:capitalize).join
+      puts "#{key} not found, falling back to #{class_name}"
       Object.const_get(class_name).new
     end
   end
@@ -227,7 +228,7 @@ class DependencyRegistrationException < StandardError
   end
 
   def to_s
-    "A Dependency has already been registered for the key: '#{key}'"
+    "A Dependency has already been registered for the key: '#{@key}'"
   end
 
 end
