@@ -5,16 +5,19 @@ require_relative 'test_objects/test_classes'
 
 describe SinjectContainer do
 
-  it 'should populate the class variable instance when created' do
+  let(:container) { described_class.instance }
 
-    container = SinjectContainer.new
+  after do
+    container.instance_variable_set("@store", [])
+  end
+
+  it 'should populate the class variable instance when created' do
 
     expect(container).to eq(SinjectContainer.instance)
   end
 
   it 'should report a registered dependency when asked' do
 
-    container = SinjectContainer.new
     container.register(:multi_instance, MultiInstance)
 
     expect(container.is_registered?(:multi_instance)).to eq(true)
@@ -22,7 +25,6 @@ describe SinjectContainer do
   end
 
   it 'should return a multi instance object correctly' do
-    container = SinjectContainer.new
     container.register(:multi_instance, MultiInstance, false)
     obj1 = container.get(:multi_instance)
 
@@ -35,7 +37,6 @@ describe SinjectContainer do
 
   it 'should return a single instance object correctly' do
 
-    container = SinjectContainer.new
     container.register(:single_instance, SingleInstance, true)
     obj1 = container.get(:single_instance)
 
@@ -49,7 +50,6 @@ describe SinjectContainer do
 
   it 'should build a requested object with dependencies' do
 
-    container = SinjectContainer.new
     container.register(:hello_world, HelloWorld, true)
     container.register(:goodbye_world, GoodbyeWorld, false)
     container.register(:object_with_dependencies, ObjectWithDependency, false)
@@ -64,15 +64,11 @@ describe SinjectContainer do
 
   it 'should not throw an exception for a dependency registration with a valid contract' do
 
-    container = SinjectContainer.new
-
     expect { container.register(:logger, CustomLogger, true, LoggerContract) }.not_to raise_error
 
   end
 
   it 'should throw a DependencyContractMissingMethodsException for a dependency registration with missing methods from the contract' do
-
-    container = SinjectContainer.new
 
     expect { container.register(:logger, SingleInstance, true, LoggerContract) }.to raise_error(DependencyContractMissingMethodsException)
 
@@ -80,15 +76,12 @@ describe SinjectContainer do
 
   it 'should throw a DependencyContractInvalidParametersException for a dependency registration with invalid method parameters compared to the contract' do
 
-    container = SinjectContainer.new
-
     expect { container.register(:cache_control, RedisCacheControl, true, CacheControlContract) }.to raise_error(DependencyContractInvalidParametersException)
 
   end
 
   it 'should create a dependency from a custom initialize block' do
 
-    container = SinjectContainer.new
     container.register(:hello_world, HelloWorld) do
       instance = HelloWorld.new
       instance.value = 'Custom init'
@@ -103,7 +96,6 @@ describe SinjectContainer do
 
   it 'should throw a DependencyInitializeException for a dependency initializer block that fails to create a dependency of the expected type' do
 
-    container = SinjectContainer.new
     container.register(:hello_world, HelloWorld) do
         GoodbyeWorld.new
     end
@@ -114,7 +106,6 @@ describe SinjectContainer do
 
   it 'should load dependencies from valid dependencygroups' do
 
-    container = SinjectContainer.new
     container.load_groups
 
     expect(container.is_registered?(:hello_world)).to eq(true)
@@ -124,7 +115,6 @@ describe SinjectContainer do
 
   it 'should not load dependencies from invalid dependencygroups' do
 
-    container = SinjectContainer.new
     container.load_groups
 
     expect(container.is_registered?(:logger)).to eq(false)
