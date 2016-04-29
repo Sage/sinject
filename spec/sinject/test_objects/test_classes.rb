@@ -51,10 +51,10 @@ class RedisCacheControl
   end
 end
 
-class TestDependencyGroup < DependencyGroup
+class TestDependencyGroup < Sinject::DependencyGroup
   def register(container)
-    container.register(:hello_world, HelloWorld, true)
-    container.register(:goodbye_world, GoodbyeWorld, true)
+    container.register({ :key => :hello_world, :class => HelloWorld, :singleton => true })
+    container.register({ :key => :goodbye_world, :class => GoodbyeWorld, :singleton => true})
   end
 
   def is_valid?
@@ -62,9 +62,9 @@ class TestDependencyGroup < DependencyGroup
   end
 end
 
-class TestDependencyGroup2 < DependencyGroup
+class TestDependencyGroup2 < Sinject::DependencyGroup
   def register(container)
-    container.register(:logger, CustomLogger, true)
+    container.register({ :key => :logger, :class => CustomLogger, :singleton => true})
   end
 
   def is_valid?

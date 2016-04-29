@@ -21,38 +21,34 @@ Or install it yourself as:
 
 ## Usage
 
-**Rails Setup**
-
-If you're using rails then after you've installed the gem you need to create a *'dependencies.rb'* file within the *'/config/initializers'* directory of the rails application.
-
 **Registering dependencies**
 
-Dependency objects need to be registered with the container before use, to do so you need to configure the SinjectContainer: [If you're using rails this will need to be done within the *'dependencies.rb'* file]
+Dependency objects need to be registered with the container before use, to do so you need to configure the Sinject::Container. [Note: This should be done after all code files have been required as the last step before your application starts.]
 
     #initialize the container
-    container = SinjectContainer.new
+    container = Sinject::Container.new
     
     #register your dependencies
-    container.register(:cache_store, RedisCacheStore, true)
-    container.register(:country_repository, MySqlCountryRepository, false)
+    container.register({ :key => :cache_store, :class => RedisCacheStore, :singleton => true })
+    container.register({ :key => :country_repository, :class => MySqlCountryRepository, :singleton => false })
    
 Dependencies can be registered with the container in 2 modes:
 
 - **Single instance:**  	This mode ensures that only 1 instance is created for the registered dependency and that all requests to the container for that dependency return the same instance.
 - **Multi instance:**	This mode ensures that a new instance of the registered dependency is returned for each request received by the container. 
 
-The registration mode can be set by specifying **true** or **false** to the *'single_instance'* argument of the containers register method.
+The registration mode can be set by specifying **true** or **false** to the *':singleton'* argument of the containers register method.
 
 Dependencies that require custom initialization can be registered with an initialization block to handle the creation of the dependency, this allows you more control over how the dependency is created if required:
 
-    container.register(:cache_store, RedisCacheStore, true) do
+    container.register({ :key => :cache_store, :class => RedisCacheStore, :singleton => true }) do
         instance = RedisCacheStore.new
         instance.host = 'http://localhost'
         instance.port = '6369'
         instance
     end
 
-Dependencies with a custom initialization block must return an object of the registered dependency class type, if an unexpected instance is returned then Sinject will raise a `DependencyInitializeException`.
+Dependencies with a custom initialization block must return an object of the registered dependency class type, if an unexpected instance is returned then Sinject will raise a `Sinject::DependencyInitializeException`.
 
 **Assigning dependencies**
 
@@ -91,23 +87,23 @@ To create a dependency contract you need to create a new class with empty method
 Then when registering a dependency for the role the contract is written for, you can assign the contract:
 
     #register the dependency
-    container.register(:logger, FileLogger, false, LoggerContract)
+    container.register({ :key => :logger, :class => FileLogger, :singleton => false, :contract => LoggerContract })
     
 Sinject will then validate that the registered dependency meets the requirements specified within the contract. If a dependency does not meet the contract requirements then 1 of the following exceptions will be raised:
 
-- `DependencyContractMissingMethodsException` is raised when 1 or more methods from the contract could not be found on the dependency.
-- `DependencyContractInvalidParametersException` is raised when the parameters of a contract method do not match the parameters found on a dependency method.
+- `Sinject::DependencyContractMissingMethodsException` is raised when 1 or more methods from the contract could not be found on the dependency.
+- `Sinject::DependencyContractInvalidParametersException` is raised when the parameters of a contract method do not match the parameters found on a dependency method.
 
 **Dependency Groups**
 
 Dependency registration groups can be created to allow groups of dependencies to be set without the need for manual registration *(e.g. to include with a gem for auto registration)*, or to allow different dependency groups to be loaded in different circumstances *(e.g. per environment)*.
 
-To create a dependency group, create a class that inherits from the `DependencyGroup` base class and implement the `register` & `is_valid?` methods.
+To create a dependency group, create a class that inherits from the `Sinject::DependencyGroup` base class and implement the `register` & `is_valid?` methods.
 
 For example:
 
     #create a development only dependency group
-    class DevelopmentDependencies < DependencyGroup
+    class DevelopmentDependencies < Sinject::DependencyGroup
         def register(container)
             container.register(:cache_store, LocalCacheStore, true)
             container.register(:logger, TerminalLogger, true)
