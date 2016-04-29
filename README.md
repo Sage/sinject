@@ -3,6 +3,8 @@
 
 Welcome to Sinject! a simple dependency injection framework for ruby.
 
+[Note: The update to v 1.0.0 contains breaking changes. All code has now been moved into the module 'Sinject::*' and the register method of the container has been modified to take an options hash as apposed to requiring multiple method arguments.]
+
 ## Installation
 
 Add this line to your application's Gemfile:
