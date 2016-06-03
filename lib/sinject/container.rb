@@ -6,9 +6,11 @@ module Sinject
       attr_accessor :instance
     end
 
-    def initialize
+    def initialize(singleton=true)
       @store = []
-      Sinject::Container.instance = self
+      if singleton
+        Sinject::Container.instance = self
+      end
     end
 
     # Check if an object has been registered with the container.

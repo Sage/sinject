@@ -10,6 +10,14 @@ describe Sinject::Container do
     expect(container).to eq(Sinject::Container.instance)
   end
 
+  it 'should not populate the class variable when instance created with the singleton=false option' do
+
+    container = Sinject::Container.new(false)
+
+    expect(container).to_not eq(Sinject::Container.instance)
+
+  end
+
   it 'should report a registered dependency when asked' do
 
     container = Sinject::Container.new
