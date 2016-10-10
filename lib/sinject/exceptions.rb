@@ -6,7 +6,7 @@ module Sinject
 
     def to_s
       method_names = @methods.join(', ')
-      "The following methods have not been implemented: '#{method_names}'"
+      "The following methods have not been implemented: '#{method_names}'" if method_names
     end
   end
 
@@ -18,7 +18,7 @@ module Sinject
 
     def to_s
       parameter_names = @parameters.join(', ')
-      "The method signature of method: '#{@method}' does not match the contract parameters: '#{parameter_names}'"
+      "The method signature of method: '#{@method}' does not match the contract parameters: '#{parameter_names}'" if @method && parameter_names
     end
   end
 
@@ -29,7 +29,7 @@ module Sinject
     end
 
     def to_s
-      "The custom dependency initializer does not return an object of the expected type: '#{@expected_type}'"
+      "The custom dependency initializer does not return an object of the expected type: '#{@expected_type}'" if @expected_type
     end
 
   end
@@ -41,7 +41,7 @@ module Sinject
     end
 
     def to_s
-      "A Dependency has already been registered for the key: '#{key}'"
+      "A Dependency has already been registered for the key: '#{@key}'" if @key
     end
 
   end
