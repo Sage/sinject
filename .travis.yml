@@ -1,0 +1,15 @@
+language: ruby
+rvm:
+- 2.3.0
+- 2.3.1
+
+cache: bundler
+
+deploy:
+  provider: rubygems
+  api_key:
+    secure: "EDl36Hp48wNCJDhLSaoFcMKv+oZfmUky5gOOEJGJxmjva8f7f1IN2+sYczsAc2pwRz7AEF9z8xVvOB1P3qBHUY1meJjz5l6FujTx4UF0KL3jSJA+viiJxzKzhEav8UCcoR5KeAWOAg6rvaoRS2AFM39NawdeAmGaJexf97SC9fqb6SA7y8e3LFUtzbje4dFfyn9Yg88wb3n8wIscDQH3uV5ZUwyK2F6WAkEbd00VN4rL4DMdnMCQImi6w4sobEKc0qaqY0UMBJfiF68W5P+L21rQPfFowUoRJWW16vDbhuOW0VZpaq6AqEAr1lxrARO46bnRZV/O3vdIYzwzJn96rPGY2ixfFLMkyOJQ9UrCYwRZ1/GKrF5GdVrksqyVkI9UfKu9wsy882glUezbzmfGtax3k+AB0L+9BZ3e7Nw7YWYTJr//Bgkb0ajs8oHmt8n/KGYUPSc4ITZK+WSEMeTUELhm2JptEJ4ElEVRzdbL+c1eRUV4Q6nYcG0Kur1KG1qaV8FeP5hBGqL3BCqg+m9l2gwROkCjwAaQybgUmXfdwcjUt9s/V1p4ccJpNNAxa5J0UL+FAuZWb0zaXeZ2jgZ7b7OlyQWf6cNXrM+r9diP96XCKHnQoby5snMM0PBrWy/dnxZcZXnwGACYwLTujQsjQpWCa7yBXom1XyM9Ojq37HM="
+  gem: sinject
+  on:
+    tags: true
+

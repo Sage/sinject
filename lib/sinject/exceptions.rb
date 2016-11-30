@@ -41,7 +41,7 @@ module Sinject
     end
 
     def to_s
-      "A Dependency has already been registered for the key: '#{key}'"
+      "A Dependency has already been registered for the key: '#{@key}'"
     end
 
   end

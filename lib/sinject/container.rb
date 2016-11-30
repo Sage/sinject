@@ -43,7 +43,7 @@ module Sinject
         raise Sinject::DependencyRegistrationKeyNotSpecifiedException.new
       end
 
-      if(!options.has_key?(:key))
+      if(!options.has_key?(:class))
         raise Sinject::DependencyRegistrationClassNotSpecifiedException.new
       end
 
@@ -117,7 +117,7 @@ module Sinject
       Sinject::DependencyGroup.descendants.each do |g|
         group = g.new
         if group.is_valid?
-          group.register(Sinject::Container.instance)
+          group.register(self)
         end
       end
     end
@@ -155,7 +155,6 @@ module Sinject
     end
 
     def create_instance(item)
-      instance = nil
 
       #check if a custom initializer block has been specified
       if item.initialize_block != nil

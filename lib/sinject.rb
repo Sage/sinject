@@ -1,4 +1,3 @@
-require "sinject/version"
 require 'sinject/class'
 require 'sinject/container'
 require 'sinject/container_item'
