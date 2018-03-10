@@ -129,12 +129,10 @@ describe Sinject::Container do
   end
 
   it 'should NOT load dependencies from invalid dependencygroups' do
-
     container = Sinject::Container.new(false)
     container.load_groups
 
     expect(container.is_registered?(:logger)).to eq(false)
-
   end
 
   context 'when a duplicate dependency key is registered' do

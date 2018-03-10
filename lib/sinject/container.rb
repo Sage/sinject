@@ -7,22 +7,25 @@ module Sinject
     end
 
     def initialize(singleton=true)
-      @store = []
-      if singleton
-        Sinject::Container.instance = self
-      end
+      @store = {}
+      Sinject::Container.instance = self if singleton
     end
 
     # Check if an object has been registered with the container.
     #
     # Example:
-    #   >> Sinject::Container.instance.is_registered? :object_key
+    #   >> Sinject::Container.instance.registered? :object_key
     #   => true
     #
     # Arguments:
     #   key:  (Symbol)
+    def registered?(key)
+      @store.has_key?(key)
+    end
+    # @deprecated: Use registered? method instead
     def is_registered?(key)
-      !@store.select { |i| i.key == key}.empty?
+      puts "[#{self.class}] - #is_registered? method is deprecated please use #registered? instead."
+      registered?(key)
     end
 
     # Register an object with the container.
@@ -38,22 +41,15 @@ module Sinject
     #   class_name: (ClassName)
     #   single_instance:  (Boolean)
     def register(options = {}, &initialize_block)
+      raise Sinject::DependencyRegistrationKeyNotSpecifiedException.new unless options.has_key?(:key)
 
-      if(!options.has_key?(:key))
-        raise Sinject::DependencyRegistrationKeyNotSpecifiedException.new
-      end
-
-      if(!options.has_key?(:class))
-        raise Sinject::DependencyRegistrationClassNotSpecifiedException.new
-      end
+      raise Sinject::DependencyRegistrationClassNotSpecifiedException.new unless options.has_key?(:class)
 
       key = options[:key]
       dependency_class_name = options[:class]
 
-      #check if a dependency has already been registered for this key.
-      if is_registered?(key)
-        raise Sinject::DependencyRegistrationException.new(key)
-      end
+      # check if a dependency has already been registered for this key.
+      raise Sinject::DependencyRegistrationException.new(key) if registered?(key)
 
       single_instance = false
       contract_class_name = nil
@@ -66,11 +62,8 @@ module Sinject
         contract_class_name = options[:contract]
       end
 
-      #check if a contract has been specified
-      if contract_class_name != nil
-        #validate the dependency class against the contract
-        validate_contract(dependency_class_name, contract_class_name)
-      end
+      # Validate the dependency class against the contract if a contract has been specified
+      validate_contract(dependency_class_name, contract_class_name) unless contract_class_name.nil?
 
       item = Sinject::ContainerItem.new
       item.key = key
@@ -78,7 +71,8 @@ module Sinject
       item.class_name = dependency_class_name
       item.initialize_block = initialize_block
 
-      @store.push(item)
+      @store[item.key] = item
+      true
     end
 
     # Get an object from the container.
@@ -90,25 +84,24 @@ module Sinject
     # Arguments:
     #   key:  (Symbol)
     def get(key)
-      #get the dependency from the container store for the specified key
-      items = @store.select { |i| i.key == key}
-      if !items.empty?
-        item = items.first
-
-        #check if the item has been registered as a single instance item.
+      # get the dependency from the container store for the specified key
+      item = @store[key]
+      if !item.nil?
+        # check if the item has been registered as a single instance item.
         if item.single_instance == true
-          #check if the instance needs to be created
-          if item.instance == nil
-            item.instance = create_instance(item)
-          end
+          # check if the instance needs to be created
+          item.instance = create_instance(item) if item.instance.nil?
+
           return item.instance
         else
           return create_instance(item)
         end
       else
-        #no dependency has been registered for the specified key, attempt to convert the key into a class name and initialize it.
+        # no dependency has been registered for the specified key,
+        # attempt to convert the key into a class name and initialize it.
         class_name = "#{key}".split('_').collect(&:capitalize).join
-        puts "[Sinject] - WARNING: No registered dependency could be found for key: #{key}. Attempting to load class: #{class_name}."
+        puts "[#{self.class}] - WARNING: No registered dependency could be found for key: #{key}. " \
+"Attempting to load class: #{class_name}."
         Object.const_get(class_name).new
       end
     end
@@ -116,7 +109,7 @@ module Sinject
     def load_groups
       Sinject::DependencyGroup.descendants.each do |g|
         group = g.new
-        if group.is_valid?
+        if (group.respond_to?(:valid?) && group.valid?) || (group.respond_to?(:is_valid?) && group.is_valid?)
           group.register(self)
         end
       end
@@ -125,46 +118,69 @@ module Sinject
     private
 
     def validate_contract(dependency_class, contract_class)
-
-      #get the methods defined for the contract
+      # get the methods defined for the contract
       contract_methods = (contract_class.instance_methods - Object.instance_methods)
-      #get the methods defined for the dependency
+      # get the methods defined for the dependency
       dependency_methods = (dependency_class.instance_methods - Object.instance_methods)
-      #calculate any methods specified in the contract that are not specified in the dependency
+      # calculate any methods specified in the contract that are not specified in the dependency
       missing_methods = contract_methods - dependency_methods
 
       if !missing_methods.empty?
         raise Sinject::DependencyContractMissingMethodsException.new(missing_methods)
       end
 
-      #loop through each contract method
+      # loop through each contract method
       contract_methods.each do |method|
+        # get the contract method parameters
+        contract_params = contract_class.instance_method(method).parameters.map{ |p| { type: p[0], name: p[1] } }
 
-        #get the contract method parameters
-        cmp = contract_class.instance_method(method).parameters
-        #get teh dependency method parameters
-        dmp = dependency_class.instance_method(method).parameters
+        # get the dependency method parameters
+        dependency_params = dependency_class.instance_method(method).parameters.map{ |p| { type: p[0], name: p[1] } }
 
-        #check if the parameters match for both methods
-        if cmp != dmp
-          raise Sinject::DependencyContractInvalidParametersException.new(method, cmp)
+        errors = []
+
+        contract_params.each do |cp|
+          dp = dependency_params.detect { |p| p[:name] == cp[:name] }
+          if dp.nil? || !match?(cp, dp)
+            errors << cp[:name]
+          end
         end
 
-      end
+        dependency_params.each do |dp|
+          cp = contract_params.detect { |p| p[:name] == dp[:name] }
+          if cp.nil?
+            errors << dp[:name]
+          end
+        end
 
+        # check if any parameter errors
+        if errors.length > 0
+          raise Sinject::DependencyContractInvalidParametersException.new(method, errors)
+        end
+      end
+    end
+
+    def match?(contract, dependency)
+      return true if contract[:type] == dependency[:type]
+      return true if contract[:type] == :req && dependency[:type] == :opt
+      return true if contract[:type] == :keyreq && dependency[:type] == :key
+      return false
+    end
+
+    # this method is called to get a standard param type for comparison purposes
+    def param_type(type)
+      return :arg if type == :opt || type == :req
+      return :key if type == :keyreq || type == :key
     end
 
     def create_instance(item)
-
-      #check if a custom initializer block has been specified
+      # check if a custom initializer block has been specified
       if item.initialize_block != nil
-        #call the block to create the dependency instance
+        # call the block to create the dependency instance
         instance = item.initialize_block.call
 
-        #verify the block created the expected dependency type
-        if !instance.is_a?(item.class_name)
-          raise Sinject::DependencyInitializeException.new(item.class_name)
-        end
+        # verify the block created the expected dependency type
+        raise Sinject::DependencyInitializeException.new(item.class_name) unless instance.is_a?(item.class_name)
       else
         instance = item.class_name.new
       end

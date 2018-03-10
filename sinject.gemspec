@@ -11,15 +11,15 @@ if ENV['TRAVIS_TAG'] != nil
   version = ENV['TRAVIS_TAG']
 end
 
-#if the tag version starts with v (e.g. vx.x.x)
+# if the tag version starts with v (e.g. vx.x.x)
 if version.downcase.match /^v/
-  #trim the v and set the version to x.x.x
+  # trim the v and set the version to x.x.x
   version = version.dup
   version.slice!(0)
 elsif ENV['TRAVIS_TAG'] != nil && ENV['TRAVIS_TAG'] != ''
   version = "0.0.0.#{ENV['TRAVIS_TAG']}"
 else
-  #otherwise it is not a valid release tag so set the version 0.0.0 as it not being released.
+  # otherwise it is not a valid release tag so set the version 0.0.0 as it not being released.
   version = '0.0.0'
 end
 
