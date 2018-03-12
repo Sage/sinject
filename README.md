@@ -111,7 +111,7 @@ For example:
             container.register(:logger, TerminalLogger, true)
         end
         
-        def is_valid?
+        def valid?
             Rails.env.development?
         end
     end

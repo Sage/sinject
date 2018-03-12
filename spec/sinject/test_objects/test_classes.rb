@@ -1,10 +1,8 @@
 require_relative '../../../lib/sinject'
 class SingleInstance
-
 end
 
 class MultiInstance
-
 end
 
 class HelloWorld
@@ -29,25 +27,21 @@ class ObjectWithDependency
 end
 
 class CustomLogger
-  def write
-
+  def write(text, format=:json, location:, foo: 'bar')
   end
 end
 class LoggerContract
-  def write
-
+  def write(text, format, location:, foo:)
   end
 end
 
 class CacheControlContract
   def set(key, value)
-
   end
 end
 
 class RedisCacheControl
   def set(key, value, expires)
-
   end
 end
 
@@ -57,7 +51,7 @@ class TestDependencyGroup < Sinject::DependencyGroup
     container.register({ :key => :goodbye_world, :class => GoodbyeWorld, :singleton => true})
   end
 
-  def is_valid?
+  def valid?
     return true
   end
 end
@@ -67,7 +61,7 @@ class TestDependencyGroup2 < Sinject::DependencyGroup
     container.register({ :key => :logger, :class => CustomLogger, :singleton => true})
   end
 
-  def is_valid?
+  def valid?
     return false
   end
 end
