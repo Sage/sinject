@@ -80,7 +80,7 @@ describe Sinject::Container do
 
     container = Sinject::Container.new(false)
 
-    expect { container.register({ :key => :logger, :class => SingleInstance, :singleton => true, :contract => LoggerContract }) }.to raise_error(Sinject::DependencyContractMissingMethodsException)
+    expect { container.register({ :key => :logger, :class => SingleInstance, :singleton => true, :contract => LoggerContract }) }.to raise_error(Sinject::DependencyContractMissingMethodsException, /The following methods have not been implemented\: 'write'/)
 
   end
 
@@ -88,7 +88,7 @@ describe Sinject::Container do
 
     container = Sinject::Container.new(false)
 
-    expect { container.register({ :key => :cache_control, :class => RedisCacheControl, :singleton => true, :contract => CacheControlContract }) }.to raise_error(Sinject::DependencyContractInvalidParametersException)
+    expect { container.register({ :key => :cache_control, :class => RedisCacheControl, :singleton => true, :contract => CacheControlContract }) }.to raise_error(Sinject::DependencyContractInvalidParametersException, /The method signature of method: 'set' does not match the contract parameters\: 'expires'/)
 
   end
 
@@ -114,12 +114,11 @@ describe Sinject::Container do
         GoodbyeWorld.new
     end
 
-    expect { container.get(:hello_world) }.to raise_error(Sinject::DependencyInitializeException)
+    expect { container.get(:hello_world) }.to raise_error(Sinject::DependencyInitializeException, /The custom dependency initializer does not return an object of the expected type\: 'HelloWorld'/)
 
   end
 
   it 'should load dependencies from valid dependencygroups' do
-
     container = Sinject::Container.new(false)
     container.load_groups
 
@@ -139,9 +138,7 @@ describe Sinject::Container do
     it 'should raise an exception' do
       container = Sinject::Container.new(false)
       container.register({ :key => :single_instance, :class => SingleInstance, :singleton => true })
-      expect{ container.register({ :key => :single_instance, :class => SingleInstance, :singleton => true }) }.to raise_error(Sinject::DependencyRegistrationException)
+      expect{ container.register({ :key => :single_instance, :class => SingleInstance, :singleton => true }) }.to raise_error(Sinject::DependencyRegistrationException, /already been registered for the key\: 'single_instance'/)
     end
   end
-
-
 end
