@@ -8,7 +8,9 @@ before_script: ./script/before.sh
 script:
   - bundle exec rspec
 after_script: ./script/after.sh
-
+branches:
+  only:
+    - master
 deploy:
   provider: rubygems
   api_key:
