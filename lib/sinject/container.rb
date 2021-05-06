@@ -107,7 +107,7 @@ module Sinject
     end
 
     def load_groups
-      Sinject::DependencyGroup.descendants.each do |g|
+      Sinject::DependencyGroup.descendants.sort_by(&:name).each do |g|
         group = g.new
         if (group.respond_to?(:valid?) && group.valid?) || (group.respond_to?(:is_valid?) && group.is_valid?)
           group.register(self)
