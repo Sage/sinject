@@ -1,4 +1,8 @@
 require 'simplecov'
+require 'simplecov_json_formatter'
+
+SimpleCov.formatter = SimpleCov::Formatter::JSONFormatter
+
 SimpleCov.start do
   add_filter 'spec/'
 end
@@ -26,5 +30,4 @@ RSpec.configure do |config|
     # `true` in RSpec 4.
     mocks.verify_partial_doubles = true
   end
-
 end
