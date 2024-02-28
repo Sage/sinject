@@ -1,11 +1,19 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'sinject/version'
+
+ci_version = ENV.fetch('CI_VERSION', '')
+puts "CI version - #{ci_version}" unless ci_version.empty?
+
+version = if ci_version =~ /\Av[0-9]+\.[0-9]+\.[0-9]+/
+            ci_version[1..]
+          else
+            '0.0.0'
+          end
 
 Gem::Specification.new do |spec|
   spec.name          = 'sinject'
-  spec.version       = Sinject::VERSION
+  spec.version       = version
   spec.authors       = ['Sage One']
   spec.email         = ['vaughan.britton@sage.com']
 
