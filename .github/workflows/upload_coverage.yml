@@ -1,0 +1,27 @@
+name: Upload coverage results to Code Climate
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    if: github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: Fetch coverage report
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-json
+          path: ${{github.workspace}}/coverage.json
+
+      - name: Upload coverage report to Code Climate
+        uses: paambaati/codeclimate-action@v5
+        with:
+          coverageLocations: |
+            ${{github.workspace}}/coverage.json:simplecov
+          env:
+            CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
