@@ -17,6 +17,7 @@ jobs:
         with:
           name: coverage-json
           run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload coverage report to Code Climate
         uses: paambaati/codeclimate-action@v5
