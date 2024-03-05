@@ -12,6 +12,8 @@ jobs:
     if: github.event.workflow_run.conclusion == 'success'
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Fetch coverage report
         uses: actions/download-artifact@v4
         with:
