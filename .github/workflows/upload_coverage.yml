@@ -13,18 +13,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Fetch coverage report
-        uses: actions/download-artifact@v4
         with:
-          name: coverage-json
-          run-id: ${{ github.event.workflow_run.id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.event.workflow_run.head_branch }}
 
-      - name: Upload coverage report to Code Climate
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3
+          bundler-cache: true
+
+      - name: Generate and upload coverage report
         uses: paambaati/codeclimate-action@v5
         with:
-          coverageLocations: |
-            ${{github.workspace}}/coverage.json:simplecov
+          coverageCommand: bundle exec rspec
         env:
           CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
