@@ -23,5 +23,5 @@ jobs:
         with:
           coverageLocations: |
             ${{github.workspace}}/coverage.json:simplecov
-          env:
-            CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
+        env:
+          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
