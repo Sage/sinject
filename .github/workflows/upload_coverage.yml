@@ -16,7 +16,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: coverage-json
-          path: ${{github.workspace}}/coverage.json
+          run_id: ${{ github.event.workflow_run.id }}
 
       - name: Upload coverage report to Code Climate
         uses: paambaati/codeclimate-action@v5
