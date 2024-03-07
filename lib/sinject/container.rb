@@ -167,12 +167,6 @@ module Sinject
       return false
     end
 
-    # this method is called to get a standard param type for comparison purposes
-    def param_type(type)
-      return :arg if type == :opt || type == :req
-      return :key if type == :keyreq || type == :key
-    end
-
     def create_instance(item)
       # check if a custom initializer block has been specified
       if item.initialize_block != nil
