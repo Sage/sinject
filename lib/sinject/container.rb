@@ -142,14 +142,14 @@ module Sinject
         contract_params.each do |cp|
           dp = dependency_params.detect { |p| p[:name] == cp[:name] }
           if dp.nil? || !match?(cp, dp)
-            errors << cp[:name]
+            errors << cp[:name] + '1'
           end
         end
 
         dependency_params.each do |dp|
           cp = contract_params.detect { |p| p[:name] == dp[:name] }
           if cp.nil?
-            errors << dp[:name]
+            errors << dp[:name] + '2'
             raise Sinject::DependencyContractInvalidParametersException.new(method, errors)
           end
         end
