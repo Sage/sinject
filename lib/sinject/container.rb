@@ -163,8 +163,9 @@ module Sinject
     def match?(contract, dependency)
       return true if contract[:type] == dependency[:type]
       return true if contract[:type] == :req && dependency[:type] == :opt
-      return true if contract[:type] == :keyreq && dependency[:type] == :key
-      return false
+      return true if [:keyreq, :keyrest].include?(contract[:type]) && dependency[:type] == :key
+
+      false
     end
 
     def create_instance(item)
