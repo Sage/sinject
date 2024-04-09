@@ -260,6 +260,132 @@ RSpec.describe Sinject::Container do
           expect(container.registered?(:foo)).to be_truthy
         end
       end
+
+      context 'that specifies rest parameters' do
+        let(:contract) do
+          Class.new do
+            def with_rest_args(first, second, *args); end
+          end
+        end
+
+        context 'and the class does not specify them' do
+          it 'raises DependencyContractInvalidParametersException' do
+            klass = Class.new do
+              def with_rest_args(first, second); end
+            end
+
+            expect { container.register(key: :foo, class: klass, contract: contract) }
+              .to raise_error Sinject::DependencyContractInvalidParametersException
+          end
+        end
+
+        context 'and the class specifies an additional parameter' do
+          it 'raises DependencyContractInvalidParametersException' do
+            klass = Class.new do
+              def with_rest_args(first, second, args); end
+            end
+
+            expect { container.register(key: :foo, class: klass, contract: contract) }
+              .to raise_error Sinject::DependencyContractInvalidParametersException
+          end
+        end
+
+        context 'and the class specifies the rest arguments' do
+          it 'registers the dependency' do
+            klass = Class.new do
+              def with_rest_args(first, second, *args); end
+            end
+
+            container.register(key: :foo, class: klass, contract: contract)
+            expect(container.registered?(:foo)).to be_truthy
+          end
+        end
+      end
+
+      context 'that specifies keyrest parameters' do
+        let(:contract) do
+          Class.new do
+            def with_kwrest_args(foo, bar:, **kwargs); end
+          end
+        end
+
+        context 'and the class does not specify them' do
+          it 'raises DependencyContractInvalidParametersException' do
+            klass = Class.new do
+              def with_kwrest_args(foo, bar:); end
+            end
+
+            expect { container.register(key: :foo, class: klass, contract: contract) }
+              .to raise_error Sinject::DependencyContractInvalidParametersException
+          end
+        end
+
+        context 'and the class specifies a required keyword param of the same name' do
+          it 'raises DependencyContractInvalidParametersException' do
+            klass = Class.new do
+              def with_kwrest_args(foo, bar:, kwargs:); end
+            end
+
+            expect { container.register(key: :foo, class: klass, contract: contract) }
+              .to raise_error Sinject::DependencyContractInvalidParametersException
+          end
+        end
+
+        context 'and the class specifies an optional keyword param of the same name' do
+          it 'raises DependencyContractInvalidParametersException' do
+            pending('Bug: If the contract specifies keyrest params, '\
+                    'the class should pass validation only if it also specifies keyrest args')
+
+            klass = Class.new do
+              def with_kwrest_args(foo, bar:, kwargs: nil); end
+            end
+
+            expect { container.register(key: :foo, class: klass, contract: contract) }
+              .to raise_error Sinject::DependencyContractInvalidParametersException
+          end
+        end
+
+        context 'and the class specifies them' do
+          it 'registers the dependency' do
+            klass = Class.new do
+              def with_kwrest_args(foo, bar:, **kwargs); end
+            end
+
+            container.register(key: :foo, class: klass, contract: contract)
+            expect(container.registered?(:foo)).to be_truthy
+          end
+        end
+      end
+
+      context 'when the contract expects a block' do
+        let(:contract) do
+          Class.new do
+            def with_block(foo, &block); end
+          end
+        end
+
+        context 'and the class does not' do
+          it 'raises DependencyContractInvalidParametersException' do
+            klass = Class.new do
+              def with_block(foo); end
+            end
+
+            expect { container.register(key: :foo, class: klass, contract: contract) }
+              .to raise_error Sinject::DependencyContractInvalidParametersException
+          end
+        end
+
+        context 'and the class does too' do
+          it 'registers the dependency' do
+            klass = Class.new do
+              def with_block(foo, &block); end
+            end
+
+            container.register(key: :foo, class: klass, contract: contract)
+            expect(container.registered?(:foo)).to be_truthy
+          end
+        end
+      end
     end
   end
 
