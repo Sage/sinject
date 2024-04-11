@@ -333,9 +333,6 @@ RSpec.describe Sinject::Container do
 
         context 'and the class specifies an optional keyword param of the same name' do
           it 'raises DependencyContractInvalidParametersException' do
-            pending('Bug: If the contract specifies keyrest params, '\
-                    'the class should pass validation only if it also specifies keyrest args')
-
             klass = Class.new do
               def with_kwrest_args(foo, bar:, kwargs: nil); end
             end
